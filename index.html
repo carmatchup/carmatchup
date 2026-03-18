@@ -3,32 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <title>CarMatchup | Compare Cars UK</title>
-  <meta name="description" content="Compare cars in the UK. Find the best cars for price, insurance, fuel economy and performance." />
+  <meta name="description" content="Compare cars side by side by power, torque, price, economy, dimensions, insurance and overall rating." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --bg: #eef6fb;
+      --bg-2: #f7fbfe;
+      --navy: #0d1b2a;
+      --text: #17324d;
+      --muted: #5b748d;
+      --line: #d6e5f0;
+      --card: #ffffff;
+      --blue: #17a7e0;
+      --blue-2: #0f8ec0;
+      --teal: #22c7d6;
+      --green: #0ea86b;
+      --red: #d9534f;
+      --shadow: 0 18px 40px rgba(11, 49, 84, 0.08);
+      --radius: 22px;
+    }
+
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 25%),
-        radial-gradient(circle at left, rgba(34,197,94,0.10), transparent 30%),
-        linear-gradient(180deg, #020617 0%, #081228 100%);
-      color: #ffffff;
+        radial-gradient(circle at top right, rgba(34, 199, 214, 0.12), transparent 18%),
+        linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
     }
 
     a {
-      text-decoration: none;
       color: inherit;
+      text-decoration: none;
     }
 
     .container {
-      width: 100%;
-      max-width: 1120px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 0 20px;
     }
@@ -36,359 +55,807 @@
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 10;
-      backdrop-filter: blur(12px);
-      background: rgba(2, 6, 23, 0.75);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 50;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
 
     .nav {
+      min-height: 76px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 18px 0;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .logo {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-size: 28px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.8px;
+      color: var(--navy);
+      white-space: nowrap;
     }
 
-    .logo span {
-      color: #60a5fa;
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(23, 167, 224, 0.25);
+      flex-shrink: 0;
+    }
+
+    .brand span {
+      color: var(--blue);
     }
 
     .nav-links {
       display: flex;
-      gap: 18px;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      position: relative;
+    }
+
+    .nav-button {
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-weight: 700;
       font-size: 14px;
-      color: #cbd5e1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .nav-button:hover {
+      background: #edf7fc;
+    }
+
+    .dropdown-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(96vw, 760px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .dropdown-panel.open {
+      display: block;
+    }
+
+    .panel-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      color: var(--navy);
+      letter-spacing: -0.3px;
+    }
+
+    .panel-sub {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .selector-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .selector-grid.two {
+      grid-template-columns: 1fr;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 14px 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(23, 167, 224, 0.10);
+    }
+
+    .compare-action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(15, 142, 192, 0.20);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.98);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
     }
 
     .hero {
-      padding: 70px 0 40px;
+      padding: 52px 0 22px;
     }
 
-    .hero-card {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-left,
+    .hero-right {
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 28px;
-      padding: 34px 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      box-shadow: var(--shadow);
+      padding: 28px;
     }
 
     .badge {
       display: inline-block;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(59,130,246,0.14);
-      border: 1px solid rgba(96,165,250,0.25);
-      color: #93c5fd;
+      background: #ecfaff;
+      color: var(--blue-2);
+      border: 1px solid #cbeefa;
       font-size: 13px;
-      margin-bottom: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
 
     .hero h1 {
       margin: 0;
-      font-size: 46px;
+      color: var(--navy);
+      font-size: 42px;
       line-height: 1.05;
       letter-spacing: -1.5px;
-      max-width: 760px;
+      max-width: 700px;
     }
 
     .hero p {
-      margin: 18px 0 0;
-      font-size: 19px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 18px;
       line-height: 1.6;
-      color: #cbd5e1;
       max-width: 720px;
     }
 
-    .hero-actions {
-      margin-top: 28px;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: white;
-      padding: 14px 22px;
-      border-radius: 14px;
-      font-weight: 700;
-      display: inline-block;
-      box-shadow: 0 12px 30px rgba(37,99,235,0.35);
-    }
-
-    .btn-secondary {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04);
-      color: #e2e8f0;
-      padding: 14px 22px;
-      border-radius: 14px;
-      font-weight: 700;
-      display: inline-block;
-    }
-
-    .quick-links {
-      margin-top: 26px;
+    .hero-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      margin-top: 22px;
     }
 
-    .pill {
+    .hero-pill {
       padding: 10px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      color: #cbd5e1;
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      color: var(--text);
       font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mini-card-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--navy);
+    }
+
+    .mini-card-sub {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .section {
-      padding: 18px 0 28px;
+      padding: 18px 0 34px;
     }
 
     .section-title {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      margin: 0 0 18px;
+      margin: 0 0 8px;
+      font-size: 32px;
+      line-height: 1.1;
+      color: var(--navy);
+      letter-spacing: -1px;
     }
 
     .section-sub {
-      color: #94a3b8;
-      margin: -6px 0 24px;
+      margin: 0 0 20px;
+      color: var(--muted);
       font-size: 15px;
     }
 
-    .grid {
+    .comparison-shell {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .comparison-header {
+      padding: 24px 24px 10px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%);
+    }
+
+    .comparison-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #ecfaff;
+      color: var(--blue-2);
+      border: 1px solid #cbeefa;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .comparison-title {
+      margin: 0;
+      font-size: 34px;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+
+    .comparison-summary {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    .winner-strip {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 18px 24px 22px;
+    }
+
+    .winner-box {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .winner-box strong {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .winner-box span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .compare-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #f9fcfe;
+    }
+
+    .compare-car {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .compare-car:last-child {
+      border-bottom: 0;
+    }
+
+    .compare-car-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .compare-car-name {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+      color: var(--navy);
+      letter-spacing: -0.8px;
+    }
+
+    .compare-car-meta {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table.compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    table.compare-table th,
+    table.compare-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 15px;
+      vertical-align: middle;
+    }
+
+    table.compare-table th {
+      color: var(--navy);
+      background: #f5fbfe;
+      font-size: 14px;
+    }
+
+    table.compare-table td:first-child {
+      font-weight: 700;
+      color: var(--navy);
+      width: 28%;
+      background: #fbfdff;
+    }
+
+    .better {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .worse {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .same {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .cards-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 16px;
     }
 
-    .card {
-      background: linear-gradient(180deg, rgba(30,41,59,0.92), rgba(15,23,42,0.92));
-      border: 1px solid rgba(255,255,255,0.08);
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 22px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      box-shadow: var(--shadow);
+      padding: 22px;
     }
 
-    .card:hover {
-      border-color: rgba(96,165,250,0.28);
-    }
-
-    .card-kicker {
-      display: inline-block;
-      font-size: 12px;
-      color: #93c5fd;
-      background: rgba(59,130,246,0.10);
-      border: 1px solid rgba(96,165,250,0.18);
-      border-radius: 999px;
-      padding: 6px 10px;
-      margin-bottom: 12px;
-    }
-
-    .card h3 {
-      margin: 0 0 8px;
+    .info-card h3 {
+      margin: 0 0 10px;
       font-size: 22px;
+      color: var(--navy);
       letter-spacing: -0.5px;
     }
 
-    .card p {
+    .info-card p {
       margin: 0;
-      color: #94a3b8;
-      line-height: 1.55;
-      font-size: 15px;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-
-    .stat-row {
-      margin-top: 24px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-
-    .stat {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      padding: 18px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 26px;
-      margin-bottom: 6px;
+      color: var(--muted);
+      line-height: 1.65;
     }
 
     .footer {
-      padding: 36px 0 50px;
-      color: #94a3b8;
+      padding: 24px 0 54px;
+      color: var(--muted);
       font-size: 14px;
+      text-align: center;
     }
 
-    @media (min-width: 768px) {
-      .hero {
-        padding: 90px 0 50px;
+    @media (min-width: 760px) {
+      .selector-grid.two {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .hero-card {
-        padding: 44px;
+      .hero-wrap {
+        grid-template-columns: 1.15fr 0.85fr;
       }
 
-      .grid {
+      .winner-strip {
         grid-template-columns: repeat(3, 1fr);
       }
 
-      .split {
-        grid-template-columns: 1.2fr 0.8fr;
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
 
-      .stat-row {
-        grid-template-columns: repeat(3, 1fr);
+      .compare-top {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .compare-car {
+        border-bottom: 0;
+      }
+
+      .compare-car:first-child {
+        border-right: 1px solid var(--line);
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
+  <header class="topbar">
     <div class="container">
       <div class="nav">
-        <div class="logo">Car<span>Matchup</span> 🚗</div>
+        <a href="#" class="brand">
+          <div class="brand-mark">CM</div>
+          <div>Car<span>Matchup</span></div>
+        </a>
+
         <div class="nav-links">
-          <span>Compare</span>
-          <span>Best Cars</span>
-          <span>Guides</span>
+          <div class="nav-link">
+            <button class="nav-button" id="navCompareBtn">Compare Cars ▾</button>
+
+            <div class="dropdown-panel" id="navComparePanel">
+              <h3 class="panel-title">Compare any two cars</h3>
+              <p class="panel-sub">
+                Pick two models and compare them side by side on performance, pricing,
+                dimensions, economy, insurance and overall rating.
+              </p>
+
+              <div class="selector-grid two">
+                <div class="field">
+                  <label for="navCar1">First car</label>
+                  <select id="navCar1"></select>
+                </div>
+
+                <div class="field">
+                  <label for="navCar2">Second car</label>
+                  <select id="navCar2"></select>
+                </div>
+              </div>
+
+              <div class="compare-action-row">
+                <button class="btn btn-primary" id="navCompareAction">Compare now</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="nav-button">Best Cars</button>
+          <button class="nav-button">Electric & Hybrid</button>
+          <button class="nav-button">Guides</button>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="container">
+  <main>
     <section class="hero">
-      <div class="hero-card">
-        <div class="badge">UK car comparison platform</div>
-        <h1>Compare cars, costs and specs in a cleaner way.</h1>
-        <p>
-          Find the best car for your budget with side-by-side comparisons, buyer guides,
-          running-cost insights and simple verdicts built for UK drivers.
+      <div class="container">
+        <div class="hero-wrap">
+          <div class="hero-left">
+            <div class="badge">UK-first comparison platform</div>
+            <h1>Compare cars, costs and specs side by side.</h1>
+            <p>
+              Match up two models instantly and see which one wins on power, torque,
+              0–62, top speed, price, dimensions, economy, insurance and overall rating.
+            </p>
+
+            <div class="hero-pills">
+              <span class="hero-pill">Power & torque</span>
+              <span class="hero-pill">0–62 & top speed</span>
+              <span class="hero-pill">New & used prices</span>
+              <span class="hero-pill">MPG & insurance</span>
+              <span class="hero-pill">Dimensions & seats</span>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <h3 class="mini-card-title">Quick compare</h3>
+            <p class="mini-card-sub">
+              This is the main feature of the site. Pick any two models below.
+            </p>
+
+            <div class="selector-grid">
+              <div class="field">
+                <label for="heroCar1">Choose first car</label>
+                <select id="heroCar1"></select>
+              </div>
+
+              <div class="field">
+                <label for="heroCar2">Choose second car</label>
+                <select id="heroCar2"></select>
+              </div>
+            </div>
+
+            <div class="compare-action-row">
+              <button class="btn btn-primary" id="heroCompareAction">Match them up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Live comparison</h2>
+        <p class="section-sub">
+          This sample comparison updates instantly from the dropdowns above.
         </p>
 
-        <div class="hero-actions">
-          <a href="#popular" class="btn-primary">Explore comparisons</a>
-          <a href="#budget" class="btn-secondary">Browse by budget</a>
-        </div>
-
-        <div class="quick-links">
-          <span class="pill">BMW 1 Series vs Audi A3</span>
-          <span class="pill">Golf vs Ford Focus</span>
-          <span class="pill">Tesla Model 3 vs BMW i4</span>
-          <span class="pill">Best cars under £10,000</span>
-        </div>
-
-        <div class="stat-row">
-          <div class="stat">
-            <strong>UK-first</strong>
-            Built around local prices, fuel economy and buyer intent.
-          </div>
-          <div class="stat">
-            <strong>SEO-ready</strong>
-            Designed to scale into hundreds of comparison pages.
-          </div>
-          <div class="stat">
-            <strong>AdSense-ready</strong>
-            Clean content-first layout for monetisation later.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="popular">
-      <h2 class="section-title">🔥 Popular comparisons</h2>
-      <p class="section-sub">These pages will become your main organic traffic drivers.</p>
-
-      <div class="grid">
-        <a class="card" href="#">
-          <div class="card-kicker">Premium hatchbacks</div>
-          <h3>BMW 1 Series vs Audi A3</h3>
-          <p>Compare price, running costs, interior feel and everyday usability.</p>
-        </a>
-
-        <a class="card" href="#">
-          <div class="card-kicker">Everyday favourites</div>
-          <h3>VW Golf vs Ford Focus</h3>
-          <p>A classic UK matchup covering reliability, value and driving feel.</p>
-        </a>
-
-        <a class="card" href="#">
-          <div class="card-kicker">EV showdown</div>
-          <h3>Tesla Model 3 vs BMW i4</h3>
-          <p>Range, charging, cabin quality and real-world ownership comparison.</p>
-        </a>
-      </div>
-    </section>
-
-    <section class="section" id="budget">
-      <div class="split">
-        <div>
-          <h2 class="section-title">💸 Best cars by budget</h2>
-          <p class="section-sub">High-volume pages that can pull broad search traffic.</p>
-
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-kicker">Budget buyers</div>
-            <h3>Best cars under £5,000 UK</h3>
-            <p>Affordable picks for first-time drivers, commuters and low-cost motoring.</p>
+        <div class="comparison-shell" id="comparisonSection">
+          <div class="comparison-header">
+            <div class="comparison-kicker">Side-by-side analysis</div>
+            <h2 class="comparison-title" id="comparisonTitle">BMW 1 Series vs Audi A3</h2>
+            <p class="comparison-summary" id="comparisonSummary">
+              Compare performance, price, practicality and running costs in one clean view.
+            </p>
           </div>
 
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-kicker">Sweet spot</div>
-            <h3>Best cars under £10,000 UK</h3>
-            <p>Better reliability, newer tech and stronger all-round value.</p>
+          <div class="winner-strip">
+            <div class="winner-box">
+              <strong>Better performance</strong>
+              <span id="winnerPerformance">—</span>
+            </div>
+            <div class="winner-box">
+              <strong>Better economy</strong>
+              <span id="winnerEconomy">—</span>
+            </div>
+            <div class="winner-box">
+              <strong>Better value used</strong>
+              <span id="winnerValue">—</span>
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-kicker">Insurance savings</div>
-            <h3>Cheapest cars to insure UK</h3>
-            <p>Ideal for younger drivers and anyone trying to reduce ownership costs.</p>
-          </div>
-        </div>
+          <div class="compare-top">
+            <div class="compare-car">
+              <div class="compare-car-label">Car 1</div>
+              <h3 class="compare-car-name" id="car1Name">BMW 1 Series</h3>
+              <div class="compare-car-meta" id="car1Meta">Germany • 5 seats • 8.2/10</div>
+            </div>
 
-        <div>
-          <h2 class="section-title">⚡ Electric & hybrid</h2>
-          <p class="section-sub">Helpful guides for fast-growing UK search demand.</p>
-
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-kicker">EV guide</div>
-            <h3>Best electric cars UK 2026</h3>
-            <p>Top EV choices for range, charging value and practicality.</p>
+            <div class="compare-car">
+              <div class="compare-car-label">Car 2</div>
+              <h3 class="compare-car-name" id="car2Name">Audi A3</h3>
+              <div class="compare-car-meta" id="car2Meta">Germany • 5 seats • 8.0/10</div>
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-kicker">Cost guide</div>
-            <h3>Hybrid vs petrol cost comparison UK</h3>
-            <p>A useful ownership breakdown for people comparing long-term spend.</p>
+          <div class="table-wrap">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th id="tableHead1">BMW 1 Series</th>
+                  <th id="tableHead2">Audi A3</th>
+                </tr>
+              </thead>
+              <tbody id="comparisonTableBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="footer">
-      CarMatchup.co.uk — compare cars smarter.
-    </div>
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">What this page compares</h2>
+        <p class="section-sub">
+          These are the core buyer-focused variables your comparison engine should rank for.
+        </p>
+
+        <div class="cards-grid">
+          <div class="info-card">
+            <h3>Performance</h3>
+            <p>
+              Power in bhp, torque in lb-ft, 0–62 mph and top speed for instant driving context.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h3>Price & value</h3>
+            <p>
+              New base price plus average used price at roughly 2 years old to show real-world value.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h3>Practicality & costs</h3>
+            <p>
+              Dimensions, seating, mpg, insurance group, country of origin and your own overall rating.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    CarMatchup.co.uk — compare cars smarter.
   </div>
 
-</body>
-</html>
+  <script>
+    const cars = [
+      {
+        id: "bmw-1-series",
+        name: "BMW 1 Series",
+        bhp: 136,
+        torque: 162,
+        zeroTo62: 8.5,
+        topSpeed: 132,
+        newPrice: 32100,
+        used2yr: 24450,
+        length: 4319,
+        width: 1799,
+        height: 1434,
+        seats: 5,
+        mpg: 49.6,
+        insurance: 22,
+        origin: "Germany",
+        rating: 8.2
+      },
+      {
+        id: "audi-a3",
+        name: "Audi A3",
+        bhp: 150,
+        torque: 184,
+        zeroTo62: 8.1,
+        topSpeed: 139,
+        newPrice: 33050,
+        used2yr: 25400,
+        length: 4343,
+        width: 1816,
+        height: 1449,
+        seats: 5,
+        mpg: 50.4,
+        insurance: 24,
+        origin: "Germany",
+        rating: 8.0
+      },
+      {
+        id: "vw-golf",
+        name: "VW Golf",
+        bhp: 150,
+        torque: 184,
+        zeroTo62: 8.3,
+        topSpeed: 139,
+        newPrice: 30995,
+        used2yr: 23500,
+        length: 4284,
+        width: 1789,
+        height: 1491,
+        seats: 5,
+        mpg: 51.0,
+        insurance: 20,
+        origin: "Germany",
+        rating: 8.3
+      },
+      {
+        id: "ford-focus",
+        name: "Ford Focus",
+        bhp: 155,
+        torque: 140,
+        zeroTo62: 8.4,
+        topSpeed: 130,
+        newPrice: 28500,
+        used2yr: 20950,
+        length: 4378,
+        width: 1825,
+        height: 1454,
+        seats: 5,
+        mpg: 47.9,
+        insurance: 18,
+        origin: "United Kingdom",
+        rating: 7.9
+      },
+      {
+        id: "tesla-model-3",
+        name: "Tesla Model 3",
+        bhp: 283,
+        torque: 307,
+        zeroTo62: 6.1,
+        topSpeed: 125,
+        newPrice: 39990,
+        used2yr: 30800,
+        length: 4694,
+        width: 1849,
+        height: 1443,
+        seats: 5,
+        mpg: 0,
+        insurance: 48,
+        origin: "United States",
+        rating: 8.6
+      },
+      {
+        id: "bmw-i4",
+        name: "BMW i4",
+        bhp: 286,
+        torque: 295,
+        zeroTo62: 5.7,
+        topSpeed: 118,
+        newPrice: 51570,
+        used2yr: 41800,
+        length: 4783,
+        width: 1852,
+        height: 1448,
+        seats: 5,
+        mpg: 0,
+        insurance: 42,
+        origin: "Germany",
+        rating: 8.7
+      }
+    ];
+
+    const navCompareBtn = document.getElementById("navCompareBtn");
+    const navComparePanel = document.getElementById("navComparePanel");
+
+    navCompareBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      navComparePanel.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!navComparePanel.contains(e.target) && e.target !== navCompareBtn) {
+        navCompa
